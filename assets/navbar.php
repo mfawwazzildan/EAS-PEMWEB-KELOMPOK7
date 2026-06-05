@@ -21,26 +21,22 @@ if (isset($_POST['upload_foto']) && !empty($id_user_session)) {
         if (in_array($ekstensi_file, $ekstensi_valid)) {
             if ($ukuran_file <= 2097152) {
 
-                // 1. Ambil nama file foto lama untuk dihapus dari server
                 $query_lama = mysqli_query($conn, "SELECT foto FROM users WHERE id_user = '$id_user_session' LIMIT 1");
                 $data_lama  = mysqli_fetch_assoc($query_lama);
                 if (!empty($data_lama['foto'])) {
                     $path_foto_lama = 'admin/img_users/' . $data_lama['foto'];
                     if (file_exists($path_foto_lama)) {
-                        unlink($path_foto_lama); // Menghapus file lama dari folder
+                        unlink($path_foto_lama); 
                     }
                 }
 
-                // 2. Generate nama file unik baru untuk menghindari duplikasi
                 $nama_file_baru = uniqid() . '.' . $ekstensi_file;
                 $target_direktori = 'admin/img_users/' . $nama_file_baru;
 
-                // 3. Pindahkan file baru dan update database
                 if (move_uploaded_file($tmp_name, $target_direktori)) {
                     $update_query = mysqli_query($conn, "UPDATE users SET foto = '$nama_file_baru' WHERE id_user = '$id_user_session'");
 
                     if ($update_query) {
-                        // Refresh halaman agar foto langsung berganti tanpa cache lama browser
                         header("Location: " . $_SERVER['PHP_SELF']);
                         exit;
                     }
@@ -121,7 +117,6 @@ $path_foto = 'admin/img_users/' . $gambar_mhs;
 </nav>
 
 <?php
-// Mengambil nama file aktif saat ini (misal: 'history.php' atau 'index.php')
 $current_page = basename($_SERVER['SCRIPT_NAME']);
 ?>
 
