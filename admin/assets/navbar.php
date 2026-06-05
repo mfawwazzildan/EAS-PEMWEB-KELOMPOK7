@@ -32,7 +32,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <li>
                 <a href="mahasiswa.php" class="<?= ($current_page == 'mahasiswa.php') ? 'active' : ''; ?>">
                     <i class="bi bi-people-fill"></i>
-                    Mahasiswa
+                    Users
                 </a>
             </li>
 

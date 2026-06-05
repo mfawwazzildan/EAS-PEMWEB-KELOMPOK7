@@ -79,7 +79,7 @@ $total_denda = $res_denda['total'] ?? 0;
             <div class="topbar-admin">
                 <div>
                     <h1>Dashboard</h1>
-                    <p>Welcome back, manager.</p>
+                    <p>Welcome!</p>
                 </div>
             </div>
 

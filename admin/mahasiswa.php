@@ -79,6 +79,12 @@ if (isset($_POST['edit'])) {
     $npm    = htmlspecialchars($_POST['npm']);
     $email  = htmlspecialchars($_POST['email']);
     $telp   = htmlspecialchars($_POST['telp']);
+    $password_baru = $_POST['password'];
+
+    $ubah_password = !empty($password_baru);
+    if ($ubah_password) {
+        $pw_hashed = password_hash($password_baru, PASSWORD_DEFAULT);
+    }
 
     if (!empty($_FILES['foto']['name'])) {
         $nama_file = $_FILES['foto']['name'];
@@ -94,12 +100,22 @@ if (isset($_POST['edit'])) {
                 unlink($target_dir . $data_lama['foto']);
             }
 
-            $stmt = mysqli_prepare($conn, "UPDATE users SET nama=?, npm=?, email=?, telp=?, foto=? WHERE id_user=?");
-            mysqli_stmt_bind_param($stmt, "sssssi", $nama, $npm, $email, $telp, $nama_foto_baru, $id);
+            if ($ubah_password) {
+                $stmt = mysqli_prepare($conn, "UPDATE users SET nama=?, npm=?, email=?, telp=?, foto=?, password=? WHERE id_user=?");
+                mysqli_stmt_bind_param($stmt, "ssssssi", $nama, $npm, $email, $telp, $nama_foto_baru, $pw_hashed, $id);
+            } else {
+                $stmt = mysqli_prepare($conn, "UPDATE users SET nama=?, npm=?, email=?, telp=?, foto=? WHERE id_user=?");
+                mysqli_stmt_bind_param($stmt, "sssssi", $nama, $npm, $email, $telp, $nama_foto_baru, $id);
+            }
         }
     } else {
-        $stmt = mysqli_prepare($conn, "UPDATE users SET nama=?, npm=?, email=?, telp=? WHERE id_user=?");
-        mysqli_stmt_bind_param($stmt, "ssssi", $nama, $npm, $email, $telp, $id);
+        if ($ubah_password) {
+            $stmt = mysqli_prepare($conn, "UPDATE users SET nama=?, npm=?, email=?, telp=?, password=? WHERE id_user=?");
+            mysqli_stmt_bind_param($stmt, "sssssi", $nama, $npm, $email, $telp, $pw_hashed, $id);
+        } else {
+            $stmt = mysqli_prepare($conn, "UPDATE users SET nama=?, npm=?, email=?, telp=? WHERE id_user=?");
+            mysqli_stmt_bind_param($stmt, "ssssi", $nama, $npm, $email, $telp, $id);
+        }
     }
 
     mysqli_stmt_execute($stmt);
@@ -145,7 +161,7 @@ if (isset($_POST['hapus'])) {
         <main class="content-admin">
             <div class="topbar-admin">
                 <div>
-                    <h1>Data Mahasiswa</h1>
+                    <h1>Data Users</h1>
                 </div>
                 <div class="top-buttons">
                     <a href="?action=export_excel" class="btn btn-export text-decoration-none d-inline-flex align-items-center justify-content-center gap-1">
@@ -304,6 +320,10 @@ if (isset($_POST['hapus'])) {
                                         <div class="mb-3">
                                             <label class="form-label small fw-bold">No Telepon</label>
                                             <input type="text" name="telp" class="form-control" value="<?= htmlspecialchars($data['telp']); ?>" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Password Baru</label>
+                                            <input type="password" name="password" class="form-control" placeholder="Kosongkan jika tidak ingin merubah password">
                                         </div>
                                     </div>
                                     <div class="modal-footer">

@@ -52,8 +52,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export_excel') {
             </tr>
         </thead>
         <tbody>
-            <?php while ($row = mysqli_fetch_assoc($query_export)):
-                // Logika pengecekan keterlambatan untuk file Excel
+            <?php while ($row = mysqli_fetch_assoc($query_export)): 
                 $status_terlambat = '-';
                 if ($row['status'] === 'dikembalikan' && !empty($row['tgl_kembali']) && !empty($row['tgl_selesai'])) {
                     $d1 = new DateTime($row['tgl_selesai']);
@@ -65,8 +64,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'export_excel') {
                     } else {
                         $status_terlambat = 'Tepat Waktu';
                     }
-                } elseif ($row['status'] === 'Dipinjam' && !empty($row['tgl_selesai'])) {
-                    // Opsional: Cek jika sedang dipinjam tapi sudah melewati tgl_selesai hari ini
+                } elseif ($row['status'] === 'dipinjam' && !empty($row['tgl_selesai'])) {
                     $d1 = new DateTime($row['tgl_selesai']);
                     $hari_ini = new DateTime(date('Y-m-d'));
                     if ($hari_ini > $d1) {
@@ -120,7 +118,6 @@ if (isset($_POST['update_status'])) {
             if ($status_baru_match === 'dikembalikan') {
                 $sql_update  = "UPDATE peminjaman SET status = ?, tgl_kembali = ? WHERE id_pinjam = ?";
                 $stmt_update = mysqli_prepare($conn, $sql_update);
-                $stmt_update = mysqli_prepare($conn, $sql_update);
                 mysqli_stmt_bind_param($stmt_update, "ssi", $status_baru, $tgl_kembali, $id_pinjam);
             } else {
                 $sql_update  = "UPDATE peminjaman SET status = ? WHERE id_pinjam = ?";
@@ -139,7 +136,7 @@ if (isset($_POST['update_status'])) {
                 $stmt_stok = mysqli_prepare($conn, $sql_stok);
                 mysqli_stmt_bind_param($stmt_stok, "ii", $qty, $id_barang);
                 mysqli_stmt_execute($stmt_stok);
-            } elseif ($status_lama === 'Dipinjam' && $status_baru_match === 'dikembalikan') {
+            } elseif ($status_lama === 'dipinjam' && $status_baru_match === 'dikembalikan') {
                 $sql_stok  = "UPDATE barang SET stok = stok + ? WHERE id_barang = ?";
                 $stmt_stok = mysqli_prepare($conn, $sql_stok);
                 mysqli_stmt_bind_param($stmt_stok, "ii", $qty, $id_barang);
@@ -176,6 +173,33 @@ if (isset($_POST['update_status'])) {
             echo "Gagal memproses pengembalian: " . $e->getMessage();
             exit;
         }
+    }
+
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
+if (isset($_POST['hapus'])) {
+    $id = $_POST['id'];
+
+    mysqli_begin_transaction($conn);
+
+    try {
+        $sql_hapus_denda = "DELETE FROM denda WHERE id_pinjam = ?";
+        $stmt_denda = mysqli_prepare($conn, $sql_hapus_denda);
+        mysqli_stmt_bind_param($stmt_denda, "i", $id);
+        mysqli_stmt_execute($stmt_denda);
+
+        $sql_hapus_pinjam = "DELETE FROM peminjaman WHERE id_pinjam = ?";
+        $stmt_pinjam = mysqli_prepare($conn, $sql_hapus_pinjam);
+        mysqli_stmt_bind_param($stmt_pinjam, "i", $id);
+        mysqli_stmt_execute($stmt_pinjam);
+
+        mysqli_commit($conn);
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        echo "Gagal menghapus data: " . $e->getMessage();
+        exit;
     }
 
     header("Location: " . $_SERVER['PHP_SELF']);
@@ -230,7 +254,7 @@ if (isset($_POST['update_status'])) {
                         <tbody>
                             <?php
                             $query_peminjaman = "SELECT 
-                                                    p.id_pinjam,p.kode_peminjaman, p.status, p.tgl_mulai, p.tgl_selesai, p.tgl_kembali, p.jumlah_pinjam, p.catatan,
+                                                    p.id_pinjam, p.kode_peminjaman, p.status, p.tgl_mulai, p.tgl_selesai, p.tgl_kembali, p.jumlah_pinjam, p.catatan,
                                                     u.nama, u.npm, 
                                                     b.nama_barang, b.id_barang
                                                  FROM peminjaman p
@@ -242,9 +266,9 @@ if (isset($_POST['update_status'])) {
                             while ($data = mysqli_fetch_assoc($run_query)) {
                                 $badge_color = 'bg-warning text-dark';
                                 if ($data['status'] === 'disetujui') $badge_color = 'bg-primary text-white';
-                                if ($data['status'] === 'Dipinjam') $badge_color = 'bg-info text-white';
+                                if ($data['status'] === 'dipinjam') $badge_color = 'bg-info text-white';
                                 if ($data['status'] === 'dikembalikan') $badge_color = 'bg-success text-white';
-                                if ($data['status'] === 'Ditolak') $badge_color = 'bg-danger text-white';
+                                if ($data['status'] === 'ditolak') $badge_color = 'bg-danger text-white';
                             ?>
                                 <tr>
                                     <td><strong><?= $data['kode_peminjaman']; ?></strong></td>
@@ -325,7 +349,7 @@ if (isset($_POST['update_status'])) {
                                                         <div class="d-flex flex-column">
                                                             <button type="submit" name="update_status" class="btn btn-info text-white py-2 fw-semibold"
                                                                 onclick="document.getElementById('status_aksi<?= $data['id_pinjam']; ?>').value='dipinjam';">
-                                                                <i class="bi bi-play-fill me-2"></i> Serahkan Barang (Mulai Dipinjam)
+                                                                <i class="bi bi-play-fill me-2"></i> Serahkan Barang (Mulai dipinjam)
                                                             </button>
                                                         </div>
 
