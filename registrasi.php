@@ -6,50 +6,33 @@ $error_message = "";
 
 if (isset($_POST['submit'])) {
 
-    $nama     = mysqli_real_escape_string($conn, $_POST['nama']);
-    $npm      = mysqli_real_escape_string($conn, $_POST['npm']);
-    $email    = mysqli_real_escape_string($conn, $_POST['email']);
-    $telepon  = mysqli_real_escape_string($conn, $_POST['telepon']);
+    $nama     = $_POST['nama'];
+    $npm      = $_POST['npm'];
+    $email    = $_POST['email'];
+    $telepon  = $_POST['telepon'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $level    = 'Mahasiswa';
 
-    $cek = mysqli_query($conn, "
-        SELECT *
-        FROM users
-        WHERE email='$email'
-        OR npm='$npm'
-    ");
+    $stmt_cek = mysqli_prepare($conn, "SELECT id_user FROM users WHERE email = ?");
+    mysqli_stmt_bind_param($stmt_cek, "s", $email);
+    mysqli_stmt_execute($stmt_cek);
+    mysqli_stmt_store_result($stmt_cek);
 
-    if (mysqli_num_rows($cek) > 0) {
-
-        $error_message = "Email atau NPM sudah terdaftar.";
+    if (mysqli_stmt_num_rows($stmt_cek) > 0) {
+        $error_message = "Email .";
+        mysqli_stmt_close($stmt_cek);
     } else {
+        mysqli_stmt_close($stmt_cek);
 
-        $query = mysqli_query($conn, "
-            INSERT INTO users
-            (
-                nama,
-                npm,
-                email,
-                telp,
-                password,
-                level
-            )
-            VALUES
-            (
-                '$nama',
-                '$npm',
-                '$email',
-                '$telepon',
-                '$password',
-                'Mahasiswa'
-            )
-        ");
-
-        if ($query) {
+        $stmt_insert = mysqli_prepare($conn, "INSERT INTO users (nama, npm, email, telp, password, level) VALUES (?, ?, ?, ?, ?, ?)");
+        mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $npm, $email, $telepon, $password, $level);
+        
+        if (mysqli_stmt_execute($stmt_insert)) {
             $success_message = "Registrasi berhasil. Silakan login.";
         } else {
             $error_message = "Registrasi gagal.";
         }
+        mysqli_stmt_close($stmt_insert);
     }
 }
 ?>
