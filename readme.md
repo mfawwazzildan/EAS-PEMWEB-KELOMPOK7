@@ -7,4 +7,10 @@ Aplikasi berbasis web untuk mengelola peminjaman alat musik di lingkungan kampus
 * **Muhammad Faiz Arrozaq** - 24081010152
 * **Kiel Alfarez Limbong** - 24081010295 
 
-
+Akun untuk demo login: 
+1. Level Mahasiswa
+  email: mfawwazzildan@gmail.com
+  pw: 123
+2. Level Admin
+  email: admin@1.com
+  pw: 123
