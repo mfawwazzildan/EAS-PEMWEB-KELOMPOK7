@@ -241,7 +241,7 @@ if (isset($_POST['hapus'])) {
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content border-0 rounded-4">
                                 <div class="modal-header border-0 pb-0">
-                                    <h5 class="modal-title fw-bold">Detail Data Mahasiswa</h5>
+                                    <h5 class="modal-title fw-bold">Detail Data User</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body p-4 text-center">
@@ -289,7 +289,7 @@ if (isset($_POST['hapus'])) {
                             <div class="modal-content border-0 rounded-4">
                                 <form method="POST" enctype="multipart/form-data">
                                     <div class="modal-header">
-                                        <h5 class="modal-title fw-bold">Edit Mahasiswa</h5>
+                                        <h5 class="modal-title fw-bold">Edit User</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body p-4">
@@ -343,7 +343,7 @@ if (isset($_POST['hapus'])) {
                                         <input type="hidden" name="id" value="<?= $data['id_user']; ?>">
                                         <i class="bi bi-trash-fill text-danger fs-1"></i>
                                         <h4 class="mt-3 fw-bold">Hapus Data?</h4>
-                                        <p class="text-muted">Data mahasiswa akan dihapus permanen.</p>
+                                        <p class="text-muted">Data User akan dihapus permanen.</p>
                                         <div class="d-flex gap-2 mt-4">
                                             <button type="button" class="btn btn-light w-100" data-bs-dismiss="modal">Batal</button>
                                             <button type="submit" name="hapus" class="btn btn-danger w-100">Hapus</button>
@@ -362,7 +362,7 @@ if (isset($_POST['hapus'])) {
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 rounded-4">
                 <div class="modal-header border-0 pb-0">
-                    <h4 class="modal-title fw-bold text-success-custom">Tambah Mahasiswa</h4>
+                    <h4 class="modal-title fw-bold text-success-custom">Tambah User</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">

@@ -67,6 +67,7 @@ if (isset($_POST['tambah'])) {
         exit;
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -352,6 +353,18 @@ if (isset($_POST['tambah'])) {
                     mysqli_stmt_execute($stmt);
                     $result = mysqli_stmt_get_result($stmt);
                     $user_data = mysqli_fetch_assoc($result);
+                    $gambar_mhs = $user_data['foto'];
+
+                    $inisial = '';
+                    $kata = explode(' ', trim($nama));
+                    if (count($kata) >= 2) {
+                        $inisial = strtoupper(substr($kata[0], 0, 1) . substr($kata[1], 0, 1));
+                    } else {
+                        $inisial = strtoupper(substr($nama, 0, 2));
+                    }
+
+                    $path_foto = 'admin/img_users/' . $gambar_mhs;
+
                     ?>
 
                     <form action="" method="POST" class="d-flex flex-column gap-4">
@@ -375,7 +388,13 @@ if (isset($_POST['tambah'])) {
                             <label class="form-label fw-bold text-dark mb-2" style="font-size: 0.85rem;">Identitas Mahasiswa</label>
                             <div class="card border-0 rounded-4 p-3 d-flex flex-row align-items-center gap-3 bg-lightblue">
                                 <div class="profile-avatar text-white d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 46px; height: 46px; font-size: 0.9rem; background-color: var(--bg-success-custom, #0A5C2C); border-radius: 50%;">
-                                    <?= isset($user_data['nama']) ? strtoupper(substr($user_data['nama'], 0, 2)) : '??'; ?>
+                                    <?php if (!empty($gambar_mhs) && file_exists($path_foto)): ?>
+                                        <img src="<?= $path_foto; ?>" alt="Profil" class="profile-avatar" >
+                                    <?php else: ?>
+                                        <div class="profile-avatar d-flex align-items-center justify-content-center text-white fw-bold bg-success" >
+                                            <?= $inisial; ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div>
                                     <h6 class="fw-bold m-0 text-success-custom" style="font-size: 1rem;">
@@ -411,7 +430,7 @@ if (isset($_POST['tambah'])) {
                         <div class="card border-0 rounded-4 p-3 position-relative overflow-hidden bg-lightblue">
                             <div class="position-absolute top-0 start-0 bottom-0" style="width: 6px; background-color: #B38E34;"></div>
                             <div class="form-check d-flex gap-2 ps-2 align-items-start">
-                                <input class="form-check-input flex-shrink-0 mt-1 border-secondary-subtle" style="margin-left: -2px;"type="checkbox" value="setuju" id="sk_check" required style="width: 18px; height: 18px;">
+                                <input class="form-check-input flex-shrink-0 mt-1 border-secondary-subtle" style="margin-left: -2px;" type="checkbox" value="setuju" id="sk_check" required style="width: 18px; height: 18px;">
                                 <label class="form-check-label text-dark" for="sk_check" style="font-size: 0.78rem; line-height: 1.4;">
                                     <strong class="d-block mb-1 text-dark" style="font-size: 0.82rem;">Syarat & Ketentuan</strong>
                                     Saya bersedia menjaga kebersihan dan kelengkapan instrumen. Kerusakan atau kehilangan menjadi tanggung jawab penuh peminjaman.
